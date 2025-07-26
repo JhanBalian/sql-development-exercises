@@ -483,3 +483,58 @@ SELECT *
 FROM vista_alumno_sin_salon
 WHERE
     num_nota >= @nota_excelente;
+
+USE escuela;    
+
+SELECT *
+FROM cr_alumno;
+
+DELIMITER //
+
+CREATE PROCEDURE alumno_con_letra(IN letra CHAR)
+BEGIN
+  SELECT *
+  FROM cr_alumno
+  WHERE nom_alumno LIKE CONCAT('%', letra, '%');
+END //
+
+DELIMITER ;
+
+DROP PROCEDURE alumno_con_letra;
+
+CALL alumno_con_letra('a');
+
+DELIMITER //
+
+CREATE FUNCTION numero_letra(letra CHAR)
+RETURNS INT
+READS SQL DATA
+BEGIN
+    DECLARE numero INT;
+
+    SELECT COUNT(*) INTO numero
+    FROM cr_alumno
+    WHERE nom_alumno LIKE CONCAT('%', letra, '%');
+
+    RETURN numero;
+END//
+
+DELIMITER ;
+
+SELECT numero_letra('j');
+
+DELIMITER //
+
+CREATE PROCEDURE operacion_matematica( IN numero1 INT, IN numero2 INT, OUT res_mul INT, OUT res_sum INT)
+BEGIN
+	SELECT
+		numero1 * numero2,
+        numero1 + numero2 INTO res_mul, res_sum;
+END//
+
+DELIMITER ;
+
+SET @res_mul = 0;
+SET @res_sum = 0;
+CALL operacion_matematica(2, 4, @res_mul, @res_sum);
+SELECT @res_mul, @res_sum;

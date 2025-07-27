@@ -538,3 +538,46 @@ SET @res_mul = 0;
 SET @res_sum = 0;
 CALL operacion_matematica(2, 4, @res_mul, @res_sum);
 SELECT @res_mul, @res_sum;
+
+USE escuela;
+
+CREATE TABLE cr_accion(
+	cod_accion INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    des_accion VARCHAR(200) NULL,
+    fec_creacion DATETIME NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+DROP TABLE cr_acciones;
+
+DESCRIBE cr_accion;
+
+DELIMITER //
+
+CREATE TRIGGER log_cr_alumno
+AFTER INSERT ON cr_alumno
+FOR EACH ROW
+BEGIN
+    INSERT INTO cr_accion (des_accion)
+    VALUES (CONCAT('Se creó un registro en cr_alumno con nombre: ', NEW.nom_alumno, ' y código: ', NEW.id_alumno));
+END//
+
+DELIMITER ;
+
+DROP TRIGGER log_cr_alumno;
+
+SELECT *
+FROM cr_alumno;
+
+INSERT INTO cr_alumno (id_salon, nom_alumno, des_apellido, num_nota)
+VALUES (4, 'Carlos', 'Bermúdez', 18);
+
+SELECT *
+FROM cr_alumno
+WHERE
+	nom_alumno LIKE '%Carlos%';
+    
+SELECT *
+FROM cr_accion;
+
+SELECT *
+FROM mysql.USER;
